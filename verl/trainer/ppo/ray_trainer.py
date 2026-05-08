@@ -348,6 +348,8 @@ class RayPPOTrainer:
         # TODO: we have to make sure the batch size is divisible by the dp size
         from verl.trainer.main_ppo import create_rl_dataset, create_rl_sampler
 
+        model_path = self.config.actor_rollout_ref.model.get("path", None)
+
         if train_dataset is None:
             train_dataset = create_rl_dataset(
                 self.config.data.train_files,
@@ -355,6 +357,7 @@ class RayPPOTrainer:
                 self.tokenizer,
                 self.processor,
                 max_samples=self.config.data.get("train_max_samples", -1),
+                model_path=model_path,
             )
         if val_dataset is None:
             val_dataset = create_rl_dataset(
@@ -363,6 +366,7 @@ class RayPPOTrainer:
                 self.tokenizer,
                 self.processor,
                 max_samples=self.config.data.get("val_max_samples", -1),
+                model_path=model_path,
             )
         self.train_dataset, self.val_dataset = train_dataset, val_dataset
 

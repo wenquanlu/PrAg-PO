@@ -123,6 +123,9 @@ def load_reward_manager(
         An instance of the specified reward manager class.
     """
 
+    # Extract model_path from config for passing to reward functions
+    model_path = config.actor_rollout_ref.model.get("path", None)
+
     # Try to get a custom reward function based on the configuration
     # user defined reward manager can be registered in custom_reward_fn
     compute_score = get_custom_reward_fn(config)
@@ -152,9 +155,10 @@ def load_reward_manager(
                 sandbox_fusion_url=sandbox_url,
                 concurrent_semaphore=_concurrent_semaphore,
                 memory_limit_mb=memory_limit_mb,
+                model_path=model_path,
             )
         else:
-            final_compute_score = default_compute_score
+            final_compute_score = partial(default_compute_score, model_path=model_path)
 
     # Instantiate and return the reward manager with the specified parameters
     return reward_manager_cls(

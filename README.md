@@ -1,14 +1,8 @@
-# Prompt Augmentation Scales up GRPO Training on Mathematical Reasoning
+# PrAg-PO: Prompt Augmented Policy Optimization for Robust and Diverse Mathematical Reasoning
 
-## News
-**2026.02.03**
-The paper is posted on [arxiv](https://arxiv.org/abs/2602.03190)! We are actively working on applying prompt augmentation to 7B models.
-
-**2026.02.05**
-We have updated our results on arxiv with a higher SOTA for 1.5B model. 🚀
 
 ## Introduction
-Reinforcement learning algorithms such as group-relative policy optimization (GRPO) have demonstrated strong potential for improving the mathematical reasoning capabilities of large language models. However, prior work has consistently observed an entropy collapse phenomenon during reinforcement post-training, characterized by a monotonic decrease in policy entropy that ultimately leads to training instability and collapse. As a result, most existing approaches restrict training to short horizons (typically 5–20 epochs), limiting sustained exploration and hindering further policy improvement. In addition, nearly all prior work relies on a single, fixed reasoning prompt or template during training. In this work, we introduce prompt augmentation, a training strategy that instructs the model to generate reasoning traces under diverse templates and formats, thereby increasing rollout diversity. We show that, without a KL regularization term, prompt augmentation enables stable scaling of training duration under a fixed dataset and allows the model to tolerate low-entropy regimes without premature collapse. Empirically, a Qwen2.5-Math-1.5B model trained with prompt augmentation on the MATH Level 3–5 dataset achieves state-of-the-art performance, reaching 45.2 per-benchmark accuracy and 51.8 per-question accuracy on standard mathematical reasoning benchmarks, including AIME24, AMC, MATH500, Minerva, and OlympiadBench.
+Reinforcement learning algorithms such as group-relative policy optimization (GRPO) have shown strong potential for improving the mathematical reasoning capabilities of large language models. While a growing body of work seeks to improve training entropy, rollout diversity, and exploration, most existing methods still train models with a single fixed reasoning prompt or template, which can encourage prompt-specific overfitting and unstable training dynamics. In this work, we introduce Prompt Augmented Policy Optimization (PrAg-PO), a simple policy optimization method that mixes prompt templates with template-specific format rewards during training. By encouraging models to generate reasoning traces under diverse instructions and output formats, PrAg-PO increases rollout diversity and improves robustness. Compared with GRPO and DAPO, PrAg-PO achieves significantly higher reasoning accuracy while mitigating premature training collapse. Empirically, experiments on DeepSeek-R1-Distill-Qwen-1.5B, Qwen2.5-Math-1.5B, and Qwen3-1.7B  show that PrAg-PO consistently outperforms strong baselines and achieves competitive performance against recent methods on mathematics benchmarks, using only a fixed MATH Level 3-5 training set of 8.5K problems. 
 
 ## Results
 <p align="center">
@@ -33,11 +27,24 @@ First install required packages for [verl](https://github.com/verl-project/verl)
 
 
 
-To train the model with prompt augmetation:
+To train PrAg-PO on Qwen2.5-Math-1.5B:
 
 ```bash
 sbatch examples/grpo_trainer/run_qwen2_5_math_1_5b.sh
 ```
+
+To train PrAg-PO on DeepSeek-R1-Distill-Qwen-1.5B:
+
+```bash
+sbatch examples/grpo_trainer/run_deepseek_r1_qwen_1_5b.sh
+```
+
+
+To train PrAg-PO on Qwen3-1.7B:
+```bash
+sbatch examples/grpo_trainer/run_qwen3_1_7b.sh
+```
+
 
 To convert checkpoints to huggingface format
 ```
@@ -46,26 +53,25 @@ sbatch convert_model.sh
 
 ## Evaluation
 
-To evaluate the trained model:
-
-```bash
-sbatch eval/eval_iterative.sh
-```
 We use greedy decoding with average of 5 inference results as our final reported result due to the stochasticity of vLLM inference engine.
 
-To evaluate our provided checkpoint, first fill in the downloaded checkpoint path in eval/eval_checkpoint.sh, then run:
+To evaluate trained Qwen2.5-Math-1.5B:
+
 ```bash
-sbatch eval/eval_checkpoint.sh
+sbatch eval_qwen2.5.sh
 ```
 
-## Important Q&A
+To evaluate trained DeepSeek-R1-Distill-Qwen-1.5B:
 
-<ul>
-<li> <b>Why other papers do not show collapse in their graphs?</b></li>
+```bash
+sbatch eval_deepseek.sh
+```
 
-You might wonder, why the other papers do not show the collapse in their graphs. Well, my take is if some paper show up to 500 steps, then what will happen at 1500 steps (or 5000 steps) is not shown. If you can keep a model stably training on a dataset for infinite steps in reinforcement learning setting without performance degeneracy, then I think it would be a major breakthrough (that is very continual-learning, AGI-vibe 🤖🧠). That's why I think scaling up the training duration is important to extract the most juice out of a given dataset.
+To evaluate trained Qwen3-1.7B:
 
-</ul>
+```bash
+sbatch eval_qwen3.sh
+```
 
 ## Comments
 

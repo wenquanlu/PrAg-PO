@@ -1,0 +1,54 @@
+{
+  "builder_name": "parquet",
+  "citation": "",
+  "config_name": "default",
+  "dataset_name": "amc-23",
+  "dataset_size": 25714,
+  "description": "",
+  "download_checksums": {
+    "hf://datasets/knoveleng/AMC-23@55c4747921a0971a18408979dcc2bc85af98f136/data/train-00000-of-00001.parquet": {
+      "num_bytes": 18688,
+      "checksum": null
+    }
+  },
+  "download_size": 18688,
+  "features": {
+    "id": {
+      "dtype": "int64",
+      "_type": "Value"
+    },
+    "problem": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "answer": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "url": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "question": {
+      "dtype": "string",
+      "_type": "Value"
+    }
+  },
+  "homepage": "",
+  "license": "",
+  "size_in_bytes": 44402,
+  "splits": {
+    "train": {
+      "name": "train",
+      "num_bytes": 25714,
+      "num_examples": 40,
+      "dataset_name": "amc-23"
+    }
+  },
+  "version": {
+    "version_str": "0.0.0",
+    "major": 0,
+    "minor": 0,
+    "patch": 0
+  }
+}

@@ -31,7 +31,7 @@ from transformers import PreTrainedTokenizer, ProcessorMixin
 
 import verl.utils.torch_functional as verl_F
 from verl.utils.model import compute_position_id_with_mask
-from verl.utils.dataset.templates import templates
+from verl.utils.model_variant_helper import should_use_deepseek_variant
 import random
 logger = logging.getLogger(__name__)
 
@@ -91,6 +91,7 @@ class RLHFDataset(Dataset):
         config: DictConfig,
         processor: Optional[ProcessorMixin] = None,
         max_samples: int = -1,
+        model_path: Optional[str] = None,
     ):
         if not isinstance(data_files, list | ListConfig):
             data_files = [data_files]
@@ -123,6 +124,17 @@ class RLHFDataset(Dataset):
         self.return_multi_modal_inputs = config.get("return_multi_modal_inputs", True)
         self.shuffle = config.get("shuffle", False)
         self.seed = config.get("seed")
+
+        # Load templates based on model variant
+        # model_path can be passed as parameter or retrieved from config
+        if model_path is None:
+            model_path = config.get("model_path", "")
+        
+        if should_use_deepseek_variant(model_path):
+            from verl.utils.dataset.templates_deepseek import templates
+        else:
+            from verl.utils.dataset.templates import templates
+        self.templates = templates
 
         self._download()
         self._read_files_and_tokenize()
@@ -302,8 +314,8 @@ class RLHFDataset(Dataset):
                 row_dict["multi_modal_inputs"].pop("second_per_grid_ts", None)
 
         else:
-            format_name = random.choice(list(templates.keys()))
-            self.tokenizer.chat_template = templates[format_name]
+            format_name = random.choice(list(self.templates.keys()))
+            self.tokenizer.chat_template = self.templates[format_name]
             if self.apply_chat_template_kwargs.get("chat_template") is None:
                 assert hasattr(self.tokenizer, "chat_template"), (
                     "chat_template should be provided in apply_chat_template_kwargs or tokenizer config, "

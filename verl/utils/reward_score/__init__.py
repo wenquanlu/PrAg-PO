@@ -24,6 +24,7 @@ def default_compute_score(
     sandbox_fusion_url=None,
     concurrent_semaphore=None,
     memory_limit_mb=None,
+    model_path=None,
     **kwargs,
 ):
     """Compute the score for a given solution based on the data source.
@@ -33,6 +34,7 @@ def default_compute_score(
         solution_str (str): The solution string to be evaluated.
         ground_truth (str): The ground truth answer for comparison.
         extra_info (dict, optional): Additional information that might be needed for scoring. Defaults to None.
+        model_path (str, optional): Model path for conditional reward logic. Defaults to None.
 
     Returns:
         float: The computed score as a floating point number. If the result is a dictionary,
@@ -60,7 +62,7 @@ def default_compute_score(
         # from . import math_verify
         # res = math_verify.compute_score(solution_str, ground_truth)
         from . import math_verify_timeout
-        res = math_verify_timeout.compute_score(solution_str, ground_truth, extra_info=extra_info)
+        res = math_verify_timeout.compute_score(solution_str, ground_truth, extra_info=extra_info, model_path=model_path)
     elif data_source in ["math_dapo", "math", "math_dapo_reasoning"] or data_source.startswith("aime"):
         from . import math_dapo
 

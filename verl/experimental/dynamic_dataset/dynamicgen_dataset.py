@@ -77,8 +77,9 @@ class DynamicGenDataset(RLHFDataset):
         tokenizer: PreTrainedTokenizer,
         config: DictConfig,
         processor: Optional[ProcessorMixin] = None,
+        model_path: Optional[str] = None,
     ):
-        super().__init__(data_files, tokenizer, config, processor)
+        super().__init__(data_files, tokenizer, config, processor, model_path=model_path)
         self.datagen: AbstractDataGenerator = config.datagen
         assert "datagen" in config and config.datagen.get("path", None) is not None, (
             f"datagen path is not set in config: {config}"

@@ -25,7 +25,28 @@ import logging
 import gc
 from itertools import product
 import numpy as np
-from verl.utils.reward_score.format_reward import get_format_reward
+from verl.utils.model_variant_helper import should_use_deepseek_variant
+
+
+def get_format_reward(format_name, completion, model_path=None):
+    """
+    Get format reward based on model variant.
+    
+    Args:
+        format_name: The format name for the reward function
+        completion: The completion text to evaluate
+        model_path: Optional model path to determine variant. If None, uses default.
+    
+    Returns:
+        Format reward score
+    """
+    if model_path and should_use_deepseek_variant(model_path):
+        from verl.utils.reward_score.format_reward_deepseek import get_format_reward as get_format_reward_deepseek
+        return get_format_reward_deepseek(format_name, completion)
+    else:
+        from verl.utils.reward_score.format_reward import get_format_reward as get_format_reward_default
+        return get_format_reward_default(format_name, completion)
+
 
 def extract_last_boxed(text):
     """
@@ -121,7 +142,7 @@ def hf_verify_with_try(gold, target):
         return False
 
 
-def compute_score(solution_str, ground_truth, extra_info=None, method='strict', default_negative_reward=-1.0):
+def compute_score(solution_str, ground_truth, extra_info=None, method='strict', default_negative_reward=-1.0, model_path=None):
     """The scoring function for GSM8k.
 
     Reference: Trung, Luong, et al. "Reft: Reasoning with reinforced fine-tuning." Proceedings of the 62nd Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers). 2024.
@@ -132,6 +153,7 @@ def compute_score(solution_str, ground_truth, extra_info=None, method='strict', 
         method: the method to extract the solution, choices are 'strict' and 'flexible'
         format_score: the score for the format
         score: the score for the correct answer
+        model_path: optional model path to determine which format reward to use
     """
     if isinstance(ground_truth, list) or isinstance(ground_truth, np.ndarray):
         print(f"[WARNING] multiple ground truth type: {type(ground_truth)}\n{ground_truth}\n using the last one {ground_truth[-1]}")
@@ -160,7 +182,7 @@ def compute_score(solution_str, ground_truth, extra_info=None, method='strict', 
     # assert "format_name" in extra_info, "format_name not in extra_info"
     format_name = extra_info["format_name"]
     
-    format_reward = get_format_reward(format_name, solution_str)
+    format_reward = get_format_reward(format_name, solution_str, model_path=model_path)
     # TODO: only use answer accuracy as the total score
     # total_score = answer_accuracy
     if correct:
@@ -183,9 +205,9 @@ def compute_score(solution_str, ground_truth, extra_info=None, method='strict', 
         #"extra_info": {"pred": boxed_answer, "is_boxed_ratio": format_reward}
     }
 
-def _call_compute_score(data_source, solution_str, ground_truth, extra_info=None):
+def _call_compute_score(data_source, solution_str, ground_truth, extra_info=None, model_path=None):
 
-    res = compute_score(solution_str, ground_truth)
+    res = compute_score(solution_str, ground_truth, extra_info=extra_info, model_path=model_path)
     
     if isinstance(res, dict):
         return res
