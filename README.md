@@ -13,9 +13,9 @@ Reinforcement learning algorithms such as group-relative policy optimization (GR
 </p>
 
 ## Weights 🏋🏻‍♂️
-- [PrAg-PO Qwen2.5-Math-1.5B Step 2720 (SOTA per-benchmark accuracy)](https://huggingface.co/daviddavidlu/DAPO-with-prompt-augmentation-step2720)
+- [PrAg-PO Qwen2.5-Math-1.5B Step 2720](https://huggingface.co/daviddavidlu/DAPO-with-prompt-augmentation-step2720)
 
-- [PrAg-PO Qwen2.5-Math-1.5B Step 2480 (SOTA per-question accuracy, 80+ on MATH500!)](https://huggingface.co/daviddavidlu/DAPO-with-prompt-augmentation-step2480)
+- [PrAg-PO Qwen2.5-Math-1.5B Step 2480 (80+ on MATH500!)](https://huggingface.co/daviddavidlu/DAPO-with-prompt-augmentation-step2480)
 
 - [PrAg-PO Qwen2.5-Math-1.5B Step 2820 (outdated)](https://huggingface.co/daviddavidlu/DAPO-with-prompt-augmentation-step2820)
 
